@@ -32,18 +32,6 @@ namespace drivenvms
             }
         }
 
-        private void RamSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (RamLabel != null)
-                RamLabel.Text = $"Оперативна пам'ять (MB): {Math.Round(e.NewValue)}";
-        }
-
-        private void CpuSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (CpuLabel != null)
-                CpuLabel.Text = $"Кількість ядер CPU: {Math.Round(e.NewValue)}";
-        }
-
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = false;
