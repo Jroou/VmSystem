@@ -1,39 +1,43 @@
-﻿using DrivenVMS;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace drivenvms
 {
     public class VirtualBoxManager
     {
-        // Стандартний шлях до утиліти управління VirtualBox
         private readonly string _vboxManagePath = @"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe";
 
-
-        // Формує повну команду і передає її в системне ядро C++
-        public string ExecuteCommand(string arguments)
+        /// <summary>
+        /// Асинхронно формує повну команду і передає її в системне ядро C++ у фоновому потоці
+        /// </summary>
+        public async Task<string> ExecuteCommandAsync(string arguments)
         {
-            string fullCommand = $"\"{_vboxManagePath}\" {arguments}";
-            StringBuilder output = new StringBuilder(8192);
-
-            NativeMethods.ExecuteSystemCommand(fullCommand, output, output.Capacity);
-
-            string result = output.ToString();
-            if (result.StartsWith("Error:"))
+            return await Task.Run(() =>
             {
-                throw new Exception($"System API Error: {result}");
-            }
-            return result;
+                string fullCommand = $"\"{_vboxManagePath}\" {arguments}";
+                StringBuilder output = new StringBuilder(8192);
+
+                NativeMethods.ExecuteSystemCommand(fullCommand, output, output.Capacity);
+
+                string result = output.ToString();
+                if (result.StartsWith("Error:"))
+                {
+                    throw new Exception($"System API Error: {result}");
+                }
+                return result;
+            });
         }
 
-
-        // Отримує список всіх ВМ та їхній поточний стан
-        public List<VirtualMachineModel> GetVirtualMachines()
+        /// <summary>
+        /// Асинхронно отримує список всіх ВМ та їхній поточний стан
+        /// </summary>
+        public async Task<List<VirtualMachineModel>> GetVirtualMachinesAsync()
         {
             var vms = new List<VirtualMachineModel>();
 
-            string output = ExecuteCommand("list vms");
+            string output = await ExecuteCommandAsync("list vms");
             string[] lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var line in lines)
@@ -44,7 +48,7 @@ namespace drivenvms
                     string name = parts[0];
                     string uuid = parts[1].Trim(' ', '{', '}');
 
-                    string stateOutput = ExecuteCommand($"showvminfo \"{uuid}\" --machinereadable");
+                    string stateOutput = await ExecuteCommandAsync($"showvminfo \"{uuid}\" --machinereadable");
                     string state = "Unknown";
 
                     foreach (var infoLine in stateOutput.Split('\n'))
@@ -62,25 +66,29 @@ namespace drivenvms
             return vms;
         }
 
-        // Запускає віртуальну машину з графічним інтерфейсом
-        public void StartVm(string uuid)
+        /// <summary>
+        /// Асинхронно запускає віртуальну машину
+        /// </summary>
+        public async Task StartVmAsync(string uuid)
         {
-            ExecuteCommand($"startvm \"{uuid}\" --type gui");
+            await ExecuteCommandAsync($"startvm \"{uuid}\" --type gui");
         }
 
-        // Вимикання віртуальної машини
-        public void StopVm(string uuid)
+        /// <summary>
+        /// Асинхронно зупиняє віртуальну машину
+        /// </summary>
+        public async Task StopVmAsync(string uuid)
         {
-            ExecuteCommand($"controlvm \"{uuid}\" poweroff");
+            await ExecuteCommandAsync($"controlvm \"{uuid}\" poweroff");
         }
 
-        public void CreateVm(string name, string osType, int ramMb, int cpuCores)
+        /// <summary>
+        /// Асинхронно створює нову віртуальну машину
+        /// </summary>
+        public async Task CreateVmAsync(string name, string osType, int ramMb, int cpuCores)
         {
-            //Створення та реєстрація машини у VirtualBox
-            ExecuteCommand($"createvm --name \"{name}\" --ostype \"{osType}\" --register");
-
-            //Налаштування виділеної оперативної пам'яті та кількості ядер
-            ExecuteCommand($"modifyvm \"{name}\" --memory {ramMb} --cpus {cpuCores}");
+            await ExecuteCommandAsync($"createvm --name \"{name}\" --ostype \"{osType}\" --register");
+            await ExecuteCommandAsync($"modifyvm \"{name}\" --memory {ramMb} --cpus {cpuCores}");
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using DrivenVMS;
-using System;
+﻿using System;
 using System.Windows;
 
 namespace drivenvms
@@ -13,8 +12,14 @@ namespace drivenvms
             InitializeComponent();
             _vboxManager = new VirtualBoxManager();
 
+            // Викликаємо асинхронне завантаження при старті вікна
+            Loaded += MainWindow_Loaded;
+        }
+
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
             LoadSystemStats();
-            LoadVirtualMachines();
+            await LoadVirtualMachinesAsync();
         }
 
         private void LoadSystemStats()
@@ -24,43 +29,62 @@ namespace drivenvms
                 ulong ram = NativeMethods.GetAvailableRAM_MB();
                 uint cores = NativeMethods.GetTotalCPUCores();
 
-                SystemStatsText.Text = $"Вільна RAM: {ram} MB | Доступно ядер: {cores}";
+                // Додатково виводимо споживання пам'яті процесами VirtualBox із нашої DLL
+                ulong vboxMemory = NativeMethods.GetTotalVBoxMemoryUsageMB();
+
+                SystemStatsText.Text = $"Вільна RAM: {ram} MB | Споживання ВМ: {vboxMemory} MB | Доступно ядер: {cores}";
             }
             catch (Exception ex)
             {
                 SystemStatsText.Text = "Помилка зв'язку з ядром (C++ DLL)";
-                MessageBox.Show($"Не вдалося завантажити системну інформацію.\nПомилка: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Не вдалося завантажити системну інформацію.\nПомилка: {ex.Message}", "Помилка DLL", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private void LoadVirtualMachines()
+        private async Task LoadVirtualMachinesAsync()
         {
             try
             {
-                var vms = _vboxManager.GetVirtualMachines();
+                // Тимчасово блокуємо кнопки, поки йде фоновий запит до системи
+                SetButtonsEnabled(false);
+                SystemStatsText.Text += " (Оновлення списку...)";
+
+                var vms = await _vboxManager.GetVirtualMachinesAsync();
                 VmsDataGrid.ItemsSource = vms;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Помилка отримання списку ВМ.\nДеталі: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Помилка отримання списку ВМ.\nДеталі: {ex.Message}", "Помилка VirtualBox", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                SetButtonsEnabled(true);
+                LoadSystemStats(); // Оновлюємо цифри пам'яті
             }
         }
 
-        private void RefreshBtn_Click(object sender, RoutedEventArgs e)
+        private void SetButtonsEnabled(bool enabled)
         {
-            LoadSystemStats();
-            LoadVirtualMachines();
+            RefreshBtn.IsEnabled = enabled;
+            StartBtn.IsEnabled = enabled;
+            StopBtn.IsEnabled = enabled;
+            CreateBtn.IsEnabled = enabled;
         }
 
-        private void StartBtn_Click(object sender, RoutedEventArgs e)
+        private async void RefreshBtn_Click(object sender, RoutedEventArgs e)
+        {
+            await LoadVirtualMachinesAsync();
+        }
+
+        private async void StartBtn_Click(object sender, RoutedEventArgs e)
         {
             if (VmsDataGrid.SelectedItem is VirtualMachineModel selectedVm)
             {
                 try
                 {
-                    _vboxManager.StartVm(selectedVm.Uuid);
+                    await _vboxManager.StartVmAsync(selectedVm.Uuid);
                     MessageBox.Show($"Віртуальну машину {selectedVm.Name} запущено.", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
-                    LoadVirtualMachines(); // Оновлюємо статус у таблиці
+                    await LoadVirtualMachinesAsync();
                 }
                 catch (Exception ex)
                 {
@@ -73,15 +97,15 @@ namespace drivenvms
             }
         }
 
-        private void StopBtn_Click(object sender, RoutedEventArgs e)
+        private async void StopBtn_Click(object sender, RoutedEventArgs e)
         {
             if (VmsDataGrid.SelectedItem is VirtualMachineModel selectedVm)
             {
                 try
                 {
-                    _vboxManager.StopVm(selectedVm.Uuid);
+                    await _vboxManager.StopVmAsync(selectedVm.Uuid);
                     MessageBox.Show($"Віртуальну машину {selectedVm.Name} зупинено.", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
-                    LoadVirtualMachines(); // Оновлюємо статус у таблиці
+                    await LoadVirtualMachinesAsync();
                 }
                 catch (Exception ex)
                 {
@@ -94,15 +118,14 @@ namespace drivenvms
             }
         }
 
-        private void CreateBtn_Click(object sender, RoutedEventArgs e)
+        private async void CreateBtn_Click(object sender, RoutedEventArgs e)
         {
             CreateVmWindow createWindow = new CreateVmWindow();
-            createWindow.Owner = this; // Робить вікно модальним відносно головного
+            createWindow.Owner = this;
 
-            // Якщо вікно повернуло True (машина створена успішно), оновлюємо таблицю
             if (createWindow.ShowDialog() == true)
             {
-                LoadVirtualMachines();
+                await LoadVirtualMachinesAsync();
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿namespace DrivenVMS
+﻿namespace drivenvms
 {
     public class VirtualMachineModel
     {

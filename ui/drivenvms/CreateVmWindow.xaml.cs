@@ -1,5 +1,4 @@
-﻿using DrivenVMS;
-using System;
+﻿using System;
 using System.Windows;
 
 namespace drivenvms
@@ -15,7 +14,6 @@ namespace drivenvms
             InitializeSystemLimits();
         }
 
-        // Встановлюємо ліміти повзунків на основі реальних системних даних з C++ DLL
         private void InitializeSystemLimits()
         {
             try
@@ -23,7 +21,6 @@ namespace drivenvms
                 ulong availableRam = NativeMethods.GetAvailableRAM_MB();
                 uint totalCores = NativeMethods.GetTotalCPUCores();
 
-                // Залишаємо 1024 МБ для роботи самої Windows (хоста), щоб уникнути зависання
                 ulong maxSafeRam = availableRam > 1024 ? availableRam - 1024 : availableRam;
 
                 RamSlider.Maximum = maxSafeRam;
@@ -31,7 +28,7 @@ namespace drivenvms
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Помилка читання системних лімітів через ядро. Встановлено стандартні обмеження.\n{ex.Message}", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"Помилка читання системних лімітів: {ex.Message}", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -53,7 +50,7 @@ namespace drivenvms
             this.Close();
         }
 
-        private void CreateBtn_Click(object sender, RoutedEventArgs e)
+        private async void CreateBtn_Click(object sender, RoutedEventArgs e)
         {
             string vmName = VmNameInput.Text.Trim();
             if (string.IsNullOrEmpty(vmName))
@@ -68,8 +65,11 @@ namespace drivenvms
 
             try
             {
-                // Звертаємося до контролера для генерації системних команд
-                _vboxManager.CreateVm(vmName, osType, ram, cpu);
+                CreateBtn.IsEnabled = false; // Блокуємо кнопку на час створення
+
+                // Викликаємо оновлений асинхронний метод
+                await _vboxManager.CreateVmAsync(vmName, osType, ram, cpu);
+
                 MessageBox.Show($"Віртуальну машину '{vmName}' успішно створено!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 this.DialogResult = true;
@@ -78,6 +78,7 @@ namespace drivenvms
             catch (Exception ex)
             {
                 MessageBox.Show($"Помилка створення ВМ: {ex.Message}", "Системна помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateBtn.IsEnabled = true;
             }
         }
     }
