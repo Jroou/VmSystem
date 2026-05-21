@@ -1,0 +1,81 @@
+# ===========================
+# Visual Studio
+# ===========================
+
+.vs/
+*.user
+*.suo
+*.cache
+*.userosscache
+*.sln.docstates
+
+# ===========================
+# Build directories
+# ===========================
+
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+[Dd]ebug*/
+[Rr]elease*/
+x64/
+x86/
+ARM/
+ARM64/
+
+# ===========================
+# C# WPF UI project
+# ===========================
+
+*.g.cs
+*.g.i.cs
+*.xaml.cs~*
+*.xaml.user
+*.xaml.resources
+drivenvms/obj/
+drivenvms/bin/
+
+# ===========================
+# C++ backend project
+# ===========================
+
+*.o
+*.obj
+*.pdb
+*.ipch
+*.pch
+*.idb
+*.res
+*.tlog
+*.vcxproj.user
+*.VC.db
+*.VC.VC.opendb
+
+VmsSystemCore/obj/
+VmsSystemCore/bin/
+
+# Generated files
+*.dll
+*.exe
+*.lib
+*.exp
+
+# ===========================
+# NuGet
+# ===========================
+
+*.nupkg
+packages/
+*.snupkg
+project.lock.json
+
+# ===========================
+# Other
+# ===========================
+
+*.tmp
+*.temp
+*.log
+*.DS_Store
+Thumbs.db
