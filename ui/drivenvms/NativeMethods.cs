@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 
-namespace DrivenVMS
+namespace drivenvms
 {
     public static class NativeMethods
     {

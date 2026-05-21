@@ -9,9 +9,8 @@ namespace drivenvms
     {
         private readonly string _vboxManagePath = @"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe";
 
-        /// <summary>
-        /// Асинхронно формує повну команду і передає її в системне ядро C++ у фоновому потоці
-        /// </summary>
+
+        // Асинхронно формує повну команду і передає її в системне ядро C++ у фоновому потоці
         public async Task<string> ExecuteCommandAsync(string arguments)
         {
             return await Task.Run(() =>
@@ -30,9 +29,8 @@ namespace drivenvms
             });
         }
 
-        /// <summary>
-        /// Асинхронно отримує список всіх ВМ та їхній поточний стан
-        /// </summary>
+        
+        // Асинхронно отримує список всіх ВМ та їхній поточний стан
         public async Task<List<VirtualMachineModel>> GetVirtualMachinesAsync()
         {
             var vms = new List<VirtualMachineModel>();
@@ -66,25 +64,20 @@ namespace drivenvms
             return vms;
         }
 
-        /// <summary>
-        /// Асинхронно запускає віртуальну машину
-        /// </summary>
+
+        // Асинхронно запускає віртуальну машину
         public async Task StartVmAsync(string uuid)
         {
             await ExecuteCommandAsync($"startvm \"{uuid}\" --type gui");
         }
 
-        /// <summary>
-        /// Асинхронно зупиняє віртуальну машину
-        /// </summary>
+        // Асинхронно зупиняє віртуальну машину
         public async Task StopVmAsync(string uuid)
         {
             await ExecuteCommandAsync($"controlvm \"{uuid}\" poweroff");
         }
 
-        /// <summary>
-        /// Асинхронно створює нову віртуальну машину
-        /// </summary>
+        // Асинхронно створює нову віртуальну машину
         public async Task CreateVmAsync(string name, string osType, int ramMb, int cpuCores)
         {
             await ExecuteCommandAsync($"createvm --name \"{name}\" --ostype \"{osType}\" --register");
