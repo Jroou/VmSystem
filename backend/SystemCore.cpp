@@ -3,6 +3,7 @@
 #include <string>
 #include <TlHelp32.h>
 #include <Psapi.h>
+#include <memory> 
 
 unsigned long long GetAvailableRAM_MB() {
     MEMORYSTATUSEX memInfo;
@@ -14,9 +15,29 @@ unsigned long long GetAvailableRAM_MB() {
 }
 
 unsigned int GetTotalCPUCores() {
-    SYSTEM_INFO sysInfo;
-    GetSystemInfo(&sysInfo);
-    return sysInfo.dwNumberOfProcessors;
+    DWORD returnLength = 0;
+    GetLogicalProcessorInformation(NULL, &returnLength);
+
+    if (returnLength == 0) return 1;
+
+    std::unique_ptr<SYSTEM_LOGICAL_PROCESSOR_INFORMATION[]> buffer(
+        new SYSTEM_LOGICAL_PROCESSOR_INFORMATION[returnLength / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION)]
+    );
+
+    if (!GetLogicalProcessorInformation(buffer.get(), &returnLength)) {
+        return 1;
+    }
+
+    unsigned int physicalCores = 0;
+    DWORD processorCoreCount = returnLength / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
+
+    for (DWORD i = 0; i < processorCoreCount; i++) {
+        if (buffer[i].Relationship == RelationProcessorCore) {
+            physicalCores++;
+        }
+    }
+
+    return physicalCores > 0 ? physicalCores : 1;
 }
 
 void ExecuteSystemCommand(const char* command, char* outputBuffer, int bufferSize) {

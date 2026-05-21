@@ -6,6 +6,32 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UseWPF>true</UseWPF>
+		<!-- Ensure platform is x64 to match native project -->
+		<Platforms>x64</Platforms>
+		<PlatformTarget>x64</PlatformTarget>
 	</PropertyGroup>
+
+	<!-- Build native project before building managed project -->
+	<Target Name="BuildNativeProject" BeforeTargets="Build">
+		<PropertyGroup>
+			<NativeProjPath>$(MSBuildProjectDirectory)\..\..\backend\VmsSystemCore.vcxproj</NativeProjPath>
+		</PropertyGroup>
+		<Message Importance="High" Text="Building native project: $(NativeProjPath) (Configuration=$(Configuration), Platform=x64)" />
+		<!-- Only attempt to build if the native project exists -->
+		<MSBuild Projects="$(NativeProjPath)" Targets="Build" Properties="Configuration=$(Configuration);Platform=x64" Condition="Exists('$(NativeProjPath)')" />
+		<Message Importance="High" Text="Native build skipped because $(NativeProjPath) was not found" Condition="!Exists('$(NativeProjPath)')" />
+	</Target>
+
+	<!-- Copy native VmsSystemCore.dll from backend build output to managed output -->
+	<Target Name="CopyNativeDll" AfterTargets="Build">
+		<PropertyGroup>
+			<!-- Use project-relative path to locate backend output -->
+			<NativeDllSource>$(MSBuildProjectDirectory)\..\..\backend\bin\x64\$(Configuration)\VmsSystemCore.dll</NativeDllSource>
+		</PropertyGroup>
+		<Message Importance="High" Text="Attempting to copy native DLL from $(NativeDllSource) to $(TargetDir)" />
+		<Message Importance="Low" Text="MSBuildProjectDirectory=$(MSBuildProjectDirectory); Configuration=$(Configuration); TargetDir=$(TargetDir)" />
+		<Copy SourceFiles="$(NativeDllSource)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" Condition="Exists('$(NativeDllSource)')" />
+		<Message Importance="High" Text="Native DLL not found at $(NativeDllSource); ensure backend project was built and OutDir matches backend\bin\x64\$(Configuration)" Condition="!Exists('$(NativeDllSource)')" />
+	</Target>
 
 </Project>
