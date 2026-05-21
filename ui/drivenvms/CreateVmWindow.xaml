@@ -29,25 +29,31 @@
 			</ComboBox>
 		</StackPanel>
 
-		<Border Grid.Row="2" Background="White" CornerRadius="6" Padding="15" Margin="0,5,0,0">
-			<Border.Effect>
-				<DropShadowEffect BlurRadius="10" Color="#000000" Opacity="0.05" ShadowDepth="1"/>
-			</Border.Effect>
-			<StackPanel>
-				<Grid Margin="0,0,0,5">
-					<TextBlock x:Name="RamLabel" Text="Оперативна пам'ять" FontWeight="SemiBold" FontSize="13"/>
-					<TextBlock Text="MB" Foreground="#888888" HorizontalAlignment="Right"/>
-				</Grid>
-				<Slider x:Name="RamSlider" Minimum="512" Maximum="8192" Value="1024" TickFrequency="512" IsSnapToTickEnabled="True" Margin="0,0,0,15"/>
+        <Border Grid.Row="2" Background="White" CornerRadius="6" Padding="15" Margin="0,5,0,0">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" Color="#000000" Opacity="0.05" ShadowDepth="1"/>
+            </Border.Effect>
+            <StackPanel>
+                <Grid Margin="0,0,0,5">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Оперативна пам'ять: " FontWeight="SemiBold" FontSize="13" Foreground="#202020"/>
+                        <TextBlock Text="{Binding ElementName=RamSlider, Path=Value}" FontWeight="Bold" FontSize="13" Foreground="#0078D4"/>
+                    </StackPanel>
+                    <TextBlock Text="MB" Foreground="#888888" HorizontalAlignment="Right" FontSize="12" VerticalAlignment="Center"/>
+                </Grid>
+                <Slider x:Name="RamSlider" Minimum="512" Maximum="8192" Value="1024" TickFrequency="512" IsSnapToTickEnabled="True" Margin="0,0,0,15"/>
 
-				<Grid Margin="0,0,0,5">
-					<TextBlock x:Name="CpuLabel" Text="Кількість ядер CPU" FontWeight="SemiBold" FontSize="13"/>
-				</Grid>
-				<Slider x:Name="CpuSlider" Minimum="1" Maximum="4" Value="1" TickFrequency="1" IsSnapToTickEnabled="True"/>
-			</StackPanel>
-		</Border>
+                <Grid Margin="0,0,0,5">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Кількість ядер CPU: " FontWeight="SemiBold" FontSize="13" Foreground="#202020"/>
+                        <TextBlock Text="{Binding ElementName=CpuSlider, Path=Value}" FontWeight="Bold" FontSize="13" Foreground="#0078D4"/>
+                    </StackPanel>
+                </Grid>
+                <Slider x:Name="CpuSlider" Minimum="1" Maximum="4" Value="1" TickFrequency="1" IsSnapToTickEnabled="True"/>
+            </StackPanel>
+        </Border>
 
-		<StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
 			<Button x:Name="CancelBtn" Content="Скасувати" Width="100" Height="35" Margin="0,0,10,0" Background="#E1E1E1" FontWeight="SemiBold" Click="CancelBtn_Click">
 				<Button.Style>
 					<Style TargetType="Button">
