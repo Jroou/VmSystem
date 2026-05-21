@@ -43,7 +43,7 @@ namespace drivenvms
             string vmName = VmNameInput.Text.Trim();
             if (string.IsNullOrEmpty(vmName))
             {
-                MessageBox.Show("Будь ласка, введіть назву віртуальної машини.", "Помилка валідації", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please enter a virtual machine name", "Validation error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -58,14 +58,14 @@ namespace drivenvms
                 // Викликаємо оновлений асинхронний метод
                 await _vboxManager.CreateVmAsync(vmName, osType, ram, cpu);
 
-                MessageBox.Show($"Віртуальну машину '{vmName}' успішно створено!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Virtual machine '{vmName}' created successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 this.DialogResult = true;
                 this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Помилка створення ВМ: {ex.Message}", "Системна помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to create VM. Details: {ex.Message}", "System error", MessageBoxButton.OK, MessageBoxImage.Error);
                 CreateBtn.IsEnabled = true;
             }
         }

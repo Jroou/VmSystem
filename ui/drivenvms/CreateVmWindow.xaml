@@ -1,7 +1,7 @@
 ﻿<Window x:Class="drivenvms.CreateVmWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Створення нової ВМ" Height="420" Width="420"
+        Title="Create New VM" Height="420" Width="420"
         WindowStartupLocation="CenterOwner" Background="#F3F3F3" FontFamily="Segoe UI" ResizeMode="NoResize">
 
 	<Grid Margin="20">
@@ -15,12 +15,12 @@
 		</Grid.RowDefinitions>
 
 		<StackPanel Grid.Row="0" Margin="0,0,0,15">
-			<TextBlock Text="Назва віртуальної машини" FontWeight="SemiBold" FontSize="13" Foreground="#333333" Margin="0,0,0,6"/>
+            <TextBlock Text="Virtual Machine Name" FontWeight="SemiBold" FontSize="13" Foreground="#333333" Margin="0,0,0,6"/>
 			<TextBox x:Name="VmNameInput" Height="32" Padding="8,5" BorderThickness="1" BorderBrush="#CCCCCC" Background="White"/>
 		</StackPanel>
 
 		<StackPanel Grid.Row="1" Margin="0,0,0,15">
-			<TextBlock Text="Тип операційної системи" FontWeight="SemiBold" FontSize="13" Foreground="#333333" Margin="0,0,0,6"/>
+            <TextBlock Text="Operating System Type" FontWeight="SemiBold" FontSize="13" Foreground="#333333" Margin="0,0,0,6"/>
 			<ComboBox x:Name="OsTypeCombo" Height="32" Padding="8,5">
 				<ComboBoxItem Content="Ubuntu_64" IsSelected="True"/>
 				<ComboBoxItem Content="Windows10_64"/>
@@ -36,7 +36,7 @@
             <StackPanel>
                 <Grid Margin="0,0,0,5">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Оперативна пам'ять: " FontWeight="SemiBold" FontSize="13" Foreground="#202020"/>
+                        <TextBlock Text="RAM Allocation: " FontWeight="SemiBold" FontSize="13" Foreground="#202020"/>
                         <TextBlock Text="{Binding ElementName=RamSlider, Path=Value}" FontWeight="Bold" FontSize="13" Foreground="#0078D4"/>
                     </StackPanel>
                     <TextBlock Text="MB" Foreground="#888888" HorizontalAlignment="Right" FontSize="12" VerticalAlignment="Center"/>
@@ -45,7 +45,7 @@
 
                 <Grid Margin="0,0,0,5">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Кількість ядер CPU: " FontWeight="SemiBold" FontSize="13" Foreground="#202020"/>
+                        <TextBlock Text="CPU Cores: " FontWeight="SemiBold" FontSize="13" Foreground="#202020"/>
                         <TextBlock Text="{Binding ElementName=CpuSlider, Path=Value}" FontWeight="Bold" FontSize="13" Foreground="#0078D4"/>
                     </StackPanel>
                 </Grid>
@@ -54,7 +54,7 @@
         </Border>
 
         <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
-			<Button x:Name="CancelBtn" Content="Скасувати" Width="100" Height="35" Margin="0,0,10,0" Background="#E1E1E1" FontWeight="SemiBold" Click="CancelBtn_Click">
+            <Button x:Name="CancelBtn" Content="Cancel" Width="100" Height="35" Margin="0,0,10,0" Background="#E1E1E1" FontWeight="SemiBold" Click="CancelBtn_Click">
 				<Button.Style>
 					<Style TargetType="Button">
 						<Setter Property="Template">
@@ -69,7 +69,7 @@
 					</Style>
 				</Button.Style>
 			</Button>
-			<Button x:Name="CreateBtn" Content="Створити" Width="120" Height="35" Background="#0078D4" Foreground="White" FontWeight="SemiBold" Click="CreateBtn_Click">
+            <Button x:Name="CreateBtn" Content="Create" Width="120" Height="35" Background="#0078D4" Foreground="White" FontWeight="SemiBold" Click="CreateBtn_Click">
 				<Button.Style>
 					<Style TargetType="Button">
 						<Setter Property="Template">

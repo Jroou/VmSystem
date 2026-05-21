@@ -18,5 +18,8 @@ namespace drivenvms
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         public static extern ulong GetTotalVBoxMemoryUsageMB();
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern void GetVBoxProcessAnalytics(StringBuilder outputBuffer, int bufferSize);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Windows;
 
 namespace drivenvms
@@ -28,16 +29,21 @@ namespace drivenvms
             {
                 ulong ram = NativeMethods.GetAvailableRAM_MB();
                 uint cores = NativeMethods.GetTotalCPUCores();
-
-                // Додатково виводимо споживання пам'яті процесами VirtualBox із нашої DLL
                 ulong vboxMemory = NativeMethods.GetTotalVBoxMemoryUsageMB();
 
-                SystemStatsText.Text = $"Вільна RAM: {ram} MB | Споживання ВМ: {vboxMemory} MB | Доступно ядер: {cores}";
+                SystemStatsText.Text = $"Available RAM: {ram} MB | VM Consumption: {vboxMemory} MB | Available Cores: {cores}";
+
+                // ВИКЛИК НОВОЇ АНАЛІТИКИ: Створюємо буфер на 4 КБ для списку процесів
+                StringBuilder processBuffer = new StringBuilder(4096);
+                NativeMethods.GetVBoxProcessAnalytics(processBuffer, processBuffer.Capacity);
+
+                // Виводимо системні дані на екран
+                ProcessAnalyticsText.Text = processBuffer.ToString();
             }
             catch (Exception ex)
             {
-                SystemStatsText.Text = "Помилка зв'язку з ядром (C++ DLL)";
-                MessageBox.Show($"Не вдалося завантажити системну інформацію.\nПомилка: {ex.Message}", "Помилка DLL", MessageBoxButton.OK, MessageBoxImage.Error);
+                SystemStatsText.Text = "Core communication error (C++ DLL)";
+                ProcessAnalyticsText.Text = $"Failed to read processes.\nDetails: {ex.Message}";
             }
         }
 
