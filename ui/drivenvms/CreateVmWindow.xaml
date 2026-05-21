@@ -1,0 +1,43 @@
+﻿<Window x:Class="drivenvms.CreateVmWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Створення нової ВМ" Height="400" Width="400"
+        WindowStartupLocation="CenterOwner" Background="#F9F9F9" ResizeMode="NoResize">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Назва віртуальної машини:" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBox x:Name="VmNameInput" Grid.Row="1" Height="25" Margin="0,0,0,15" Padding="2"/>
+
+        <TextBlock Grid.Row="2" Text="Тип операційної системи:" FontWeight="Bold" Margin="0,0,0,5"/>
+        <ComboBox x:Name="OsTypeCombo" Grid.Row="3" Height="25" Margin="0,0,0,15">
+            <ComboBoxItem Content="Ubuntu_64" IsSelected="True"/>
+            <ComboBoxItem Content="Windows10_64"/>
+            <ComboBoxItem Content="Debian_64"/>
+            <ComboBoxItem Content="Linux26_64"/>
+        </ComboBox>
+
+        <Border Grid.Row="4" Background="White" BorderBrush="#DDDDDD" BorderThickness="1" Padding="10" CornerRadius="4">
+            <StackPanel>
+                <TextBlock x:Name="RamLabel" Text="Оперативна пам'ять (MB): 1024" FontWeight="Bold"/>
+                <Slider x:Name="RamSlider" Minimum="512" Maximum="8192" Value="1024" TickFrequency="512" IsSnapToTickEnabled="True" Margin="0,5,0,15" ValueChanged="RamSlider_ValueChanged"/>
+
+                <TextBlock x:Name="CpuLabel" Text="Кількість ядер CPU: 1" FontWeight="Bold"/>
+                <Slider x:Name="CpuSlider" Minimum="1" Maximum="4" Value="1" TickFrequency="1" IsSnapToTickEnabled="True" Margin="0,5,0,5" ValueChanged="CpuSlider_ValueChanged"/>
+            </StackPanel>
+        </Border>
+
+        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button x:Name="CancelBtn" Content="Скасувати" Width="80" Height="30" Margin="0,0,10,0" Click="CancelBtn_Click"/>
+            <Button x:Name="CreateBtn" Content="Створити" Width="100" Height="30" Background="#2196F3" Foreground="White" Click="CreateBtn_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
