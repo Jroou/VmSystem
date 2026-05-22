@@ -41,7 +41,7 @@ The project uses deterministic build targets. Building the UI project will autom
 
 ### Compilation
 1. Clone the repository:
-   git clone https://github.com/VladyslavHutchak/VmSystem.git
+   git clone https://github.com/Jroou/VmSystem.git
 2. Open `VmSystem.sln` in Visual Studio.
 3. Set the build configuration to **Release | x64**.
 4. Right-click the Solution and select **Rebuild Solution**.
